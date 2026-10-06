@@ -1,18 +1,17 @@
 # TripMind AI
 
-TripMind AI — локальный MVP сервиса для планирования путешествий. Пользователь задаёт destination, duration, budget, interests, travellers, pace and receives a day-by-day itinerary with scenario comparison, route summary, weather adaptation and a small AI-style chat.
+TripMind AI — локальный MVP сервиса для планирования путешествий. Пользователь задаёт город, длительность поездки, бюджет, темы поездки, состав группы и темп; получает готовый маршрут по дням, сравнение сценариев, карту-сводку и AI-стиль подсказки.
 
 ## Start
 
 ```bash
-npm install
-npm start
+python server.py
 ```
 
-Then open http://localhost:3000
+Then open http://127.0.0.1:3000
 
 ## Tests
 
 ```bash
-npm test
+python -m unittest discover -s tests -p "test_*.py"
 ```
