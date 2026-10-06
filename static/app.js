@@ -1,6 +1,11 @@
 const form = document.getElementById('tripForm');
 const summaryEl = document.getElementById('summary');
 const weatherNoteEl = document.getElementById('weatherNote');
+const travelScoreEl = document.getElementById('travelScore');
+const insightsListEl = document.getElementById('insightsList');
+const packingListEl = document.getElementById('packingList');
+const bestTimeToVisitEl = document.getElementById('bestTimeToVisit');
+const budgetBreakdownEl = document.getElementById('budgetBreakdown');
 const itineraryEl = document.getElementById('itinerary');
 const scenarioGridEl = document.getElementById('scenarioGrid');
 const mapListEl = document.getElementById('mapList');
@@ -40,6 +45,28 @@ function renderScenarios(scenarios) {
 
 function renderMap(mapPoints) {
   mapListEl.innerHTML = mapPoints.map((point) => `<li>${point}</li>`).join('');
+}
+
+function renderTravelQuality(plan) {
+  travelScoreEl.innerHTML = `
+    <div class="score-ring">${plan.travel_score}/100</div>
+    <div class="score-label">Trip fit score</div>
+  `;
+  insightsListEl.innerHTML = plan.insights.map((item) => `<li>${item}</li>`).join('');
+  packingListEl.innerHTML = plan.packing_list.map((item) => `<li>${item}</li>`).join('');
+  bestTimeToVisitEl.innerHTML = `
+    <div><strong>Best month:</strong> ${plan.best_time_to_visit.month}</div>
+    <div>${plan.best_time_to_visit.reason}</div>
+  `;
+  budgetBreakdownEl.innerHTML = `
+    <div><strong>Total:</strong> €${plan.budget_breakdown.total}</div>
+    <div><strong>Per day:</strong> €${plan.budget_breakdown.per_day}</div>
+    <ul>
+      ${Object.entries(plan.budget_breakdown.categories)
+        .map(([key, value]) => `<li>${key}: €${value}</li>`)
+        .join('')}
+    </ul>
+  `;
 }
 
 function renderChat(chat) {
@@ -102,6 +129,7 @@ async function generatePlan() {
 
   summaryEl.innerHTML = `<strong>${plan.summary}</strong>`;
   weatherNoteEl.textContent = plan.weather_note;
+  renderTravelQuality(plan);
   renderItinerary(plan.itinerary);
   renderScenarios(scenarios);
   renderMap(plan.map_points);

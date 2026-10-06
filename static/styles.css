@@ -139,6 +139,65 @@ button:hover { transform: translateY(-1px); }
   margin-bottom: 16px;
 }
 
+.quality-block {
+  margin-bottom: 20px;
+}
+
+.travel-score {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.score-ring {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: white;
+  font-weight: 700;
+}
+
+.score-label {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.insights-list, .packing-list {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.packing-list li {
+  margin-bottom: 6px;
+}
+
+.best-time-box {
+  background: #f3f8ff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  line-height: 1.6;
+}
+
+.budget-breakdown {
+  background: #f9fbff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  line-height: 1.7;
+}
+
+.budget-breakdown ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
 .scenario-grid, .itinerary-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

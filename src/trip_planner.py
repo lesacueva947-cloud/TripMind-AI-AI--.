@@ -98,6 +98,128 @@ def _route_points(destination: str, interests: List[str]) -> List[str]:
     return [f"{destination}: {point}" for point in base]
 
 
+def _travel_score(destination: str, days: int, budget: float, travellers: int, interests: List[str], pace: str, weather: str, scenario: str) -> int:
+    weather_value = (weather or 'sunny').lower()
+    pace_value = (pace or 'balanced').lower()
+    scenario_value = (scenario or 'comfort').lower()
+
+    score = 55
+    score += min(20, len(interests) * 7)
+    score += {'relaxed': 12, 'balanced': 8, 'fast': 4}.get(pace_value, 8)
+    score += {'econom': 6, 'comfort': 10, 'premium': 12}.get(scenario_value, 10)
+
+    daily_budget = (float(budget or 1800) / max(1, int(days or 3)))
+    score += min(12, int(daily_budget / 150))
+
+    if travellers > 3:
+        score -= 8
+    if weather_value in {'rainy', 'stormy', 'windy', 'cloudy'}:
+        score -= 10
+    if destination and len(destination) > 10:
+        score += 2
+
+    return max(0, min(100, round(score)))
+
+
+def _build_insights(destination: str, days: int, budget: float, travellers: int, interests: List[str], pace: str, weather: str, scenario: str) -> List[str]:
+    interest_text = ', '.join(interests)
+    daily_budget = round((float(budget or 1800) / max(1, int(days or 3))), 2)
+    weather_value = (weather or 'sunny').lower()
+    scenario_key = (scenario or 'comfort').lower()
+    suggestion = 'Keep one flexible block each day for spontaneous stops.'
+
+    if weather_value in {'rainy', 'stormy', 'windy', 'cloudy'}:
+        suggestion = 'Prioritize indoor culture and food stops, and shift outdoor walks to the clearest hours.'
+
+    return [
+        f"{destination} fits a {pace} pace well for {travellers} traveller(s) with a {days}-day structure.",
+        f"Daily spend is about €{daily_budget:.2f}, which keeps the {SCENARIOS.get(scenario_key, SCENARIOS['comfort'])['title']} style realistic.",
+        f"Best focus: {interest_text}. {suggestion}",
+    ]
+
+
+def _packing_list(destination: str, weather: str, interests: List[str], pace: str, travellers: int) -> List[str]:
+    weather_value = (weather or 'sunny').lower()
+    interest_set = {item.lower() for item in interests}
+    items = ['passport', 'phone charger', 'wallet', 'comfortable walking shoes']
+
+    if weather_value in {'rainy', 'stormy', 'windy', 'cloudy'}:
+        items.extend(['compact umbrella', 'light rain jacket', 'waterproof shoes'])
+    else:
+        items.extend(['sunscreen', 'sunglasses', 'water bottle'])
+
+    if 'beach' in interest_set:
+        items.extend(['swimwear', 'beach towel'])
+    if 'nature' in interest_set or 'adventure' in interest_set:
+        items.extend(['daypack', 'light snack pouch'])
+    if 'culture' in interest_set:
+        items.append('camera or phone tripod')
+    if 'food' in interest_set:
+        items.append('small reusable tote bag')
+    if travellers > 2:
+        items.append('portable power bank for shared charging')
+    if (pace or 'balanced').lower() == 'fast':
+        items.append('quick-dry outfit')
+    else:
+        items.append('light layer for evening strolls')
+
+    deduped = []
+    seen = set()
+    for item in items:
+        key = item.lower()
+        if key not in seen:
+            seen.add(key)
+            deduped.append(item)
+    return deduped
+
+
+def _best_time_to_visit(destination: str, interests: List[str], weather: str) -> Dict[str, str]:
+    interest_set = {item.lower() for item in interests}
+    weather_value = (weather or 'sunny').lower()
+
+    if 'beach' in interest_set:
+        return {
+            'month': 'May to September',
+            'reason': 'Warm sea and long daylight hours are ideal for beach routes and outdoor evenings.'
+        }
+    if 'nature' in interest_set or 'adventure' in interest_set:
+        return {
+            'month': 'May to October',
+            'reason': 'The best conditions for walking, hikes and scenic stops are mild and dry.'
+        }
+    if 'culture' in interest_set or 'food' in interest_set:
+        return {
+            'month': 'April to June or September to October',
+            'reason': 'Comfortable temperatures and lighter crowds make city walks and food discovery more enjoyable.'
+        }
+    if weather_value in {'rainy', 'stormy', 'windy', 'cloudy'}:
+        return {
+            'month': 'Late spring to early autumn',
+            'reason': 'The weather is typically more stable, which reduces disruption to outdoor plans.'
+        }
+    return {
+        'month': 'May to June or September to October',
+        'reason': f'{destination} is most enjoyable in shoulder season when daytime comfort and pricing are balanced.'
+    }
+
+
+def _budget_breakdown(total_budget: float, days: int, scenario: str) -> Dict[str, Any]:
+    multiplier = SCENARIOS.get((scenario or 'comfort').lower(), SCENARIOS['comfort'])['multiplier']
+    actual_total = round(float(total_budget or 1800) * multiplier, 2)
+    per_day = round(actual_total / max(1, int(days or 3)), 2)
+    categories = {
+        'accommodation': round(actual_total * 0.4, 2),
+        'food': round(actual_total * 0.25, 2),
+        'activities': round(actual_total * 0.22, 2),
+        'transport': round(actual_total * 0.13, 2),
+    }
+    return {
+        'total': actual_total,
+        'per_day': per_day,
+        'categories': categories,
+    }
+
+
 def build_trip_plan(destination: str, days: int = 3, budget: float = 1800, travellers: int = 2, interests: List[str] | None = None, pace: str = 'balanced', weather: str = 'sunny', scenario: str = 'comfort') -> Dict[str, Any]:
     destination = destination or 'Roma'
     days_value = max(1, int(days or 3))
@@ -105,6 +227,10 @@ def build_trip_plan(destination: str, days: int = 3, budget: float = 1800, trave
     selected_scenario = SCENARIOS.get(scenario.lower(), SCENARIOS['comfort'])
     trip_total = float(budget or 1800)
     daily_budget = round(trip_total / days_value, 2)
+    travel_score = _travel_score(destination, days_value, trip_total, travellers, interest_list, pace, weather, scenario)
+    insights = _build_insights(destination, days_value, trip_total, travellers, interest_list, pace, weather, scenario)
+    best_time = _best_time_to_visit(destination, interest_list, weather)
+    budget_breakdown = _budget_breakdown(trip_total, days_value, scenario)
 
     itinerary: List[Dict[str, Any]] = []
     for day in range(1, days_value + 1):
@@ -138,6 +264,11 @@ def build_trip_plan(destination: str, days: int = 3, budget: float = 1800, trave
         'destination': destination,
         'summary': summary,
         'weather_note': _weather_note(weather),
+        'travel_score': travel_score,
+        'insights': insights,
+        'packing_list': _packing_list(destination, weather, interest_list, pace, travellers),
+        'best_time_to_visit': best_time,
+        'budget_breakdown': budget_breakdown,
         'scenario': {
             'id': scenario.lower(),
             'title': selected_scenario['title'],
@@ -149,7 +280,7 @@ def build_trip_plan(destination: str, days: int = 3, budget: float = 1800, trave
         'map_points': _route_points(destination, interest_list),
         'ai_chat': {
             'prompt': f"I want a relaxing {pace} trip in {destination} with {', '.join(interest_list)} and a total budget around {trip_total}.",
-            'answer': f"{destination} works well for a {pace} trip. I would structure the route around {', '.join(_route_points(destination, interest_list)[:2])} and keep the morning flexible for local experiences before a lighter evening plan.",
+            'answer': f"{destination} works well for a {pace} trip. I would structure the route around {', '.join(_route_points(destination, interest_list)[:2])} and keep the morning flexible for local experiences before a lighter evening plan. Overall route quality score: {travel_score}/100.",
         },
     }
 
