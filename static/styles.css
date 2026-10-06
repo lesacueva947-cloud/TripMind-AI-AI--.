@@ -1,0 +1,263 @@
+:root {
+  --bg: #f4f6fb;
+  --panel: #ffffff;
+  --panel-alt: #eef6ff;
+  --text: #1f2937;
+  --muted: #667085;
+  --accent: #5b7cff;
+  --accent-2: #1db9a6;
+  --border: #dfe7f5;
+  --shadow: 0 20px 40px rgba(17, 24, 39, 0.08);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: linear-gradient(180deg, #edf4ff 0%, var(--bg) 100%);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+}
+
+.shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 20px 56px;
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+h1, h2, h3 { margin-top: 0; }
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(290px, 380px) 1fr;
+  gap: 24px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  padding: 22px;
+}
+
+.form-panel label,
+.form-panel fieldset {
+  display: block;
+  margin-bottom: 18px;
+  font-weight: 600;
+}
+
+input, select, button {
+  width: 100%;
+  margin-top: 8px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+  font-size: 15px;
+}
+
+.two-cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.checkbox-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.checkbox-row label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-weight: 500;
+}
+
+.checkbox-row input {
+  width: auto;
+  margin: 0;
+}
+
+.primary-btn, .ghost-btn {
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, var(--accent), #7a90ff);
+  color: white;
+  font-weight: 700;
+}
+
+.ghost-btn {
+  background: rgba(91, 124, 255, 0.08);
+  color: var(--accent);
+  font-weight: 600;
+  width: auto;
+  padding: 10px 18px;
+}
+
+button:hover { transform: translateY(-1px); }
+
+.results-panel, .itinerary-panel {
+  margin-top: 24px;
+}
+
+#summary {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.weather-note {
+  background: var(--panel-alt);
+  border: 1px solid #d6ebff;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+}
+
+.quality-block {
+  margin-bottom: 20px;
+}
+
+.travel-score {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.score-ring {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: white;
+  font-weight: 700;
+}
+
+.score-label {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.insights-list, .packing-list {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.packing-list li {
+  margin-bottom: 6px;
+}
+
+.best-time-box {
+  background: #f3f8ff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  line-height: 1.6;
+}
+
+.budget-breakdown {
+  background: #f9fbff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  line-height: 1.7;
+}
+
+.budget-breakdown ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+.scenario-grid, .itinerary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.scenario-card, .day-card {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  background: #fafcff;
+}
+
+.scenario-card strong, .day-card strong {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.map-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.map-list li {
+  background: #f4f8ff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.chat-box {
+  background: #f5f9ff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  line-height: 1.6;
+}
+
+.day-card ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.day-card li {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.day-card li:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+@media (max-width: 760px) {
+  .layout { grid-template-columns: 1fr; }
+  .hero { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .two-cols { grid-template-columns: 1fr; }
+}
