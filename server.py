@@ -1,9 +1,9 @@
 import json
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import urlparse
 
-from src.trip_planner import build_trip_plan, compare_scenarios
+from src.web_api import scenarios_from_query, trip_plan_from_query
 
 ROOT = Path(__file__).resolve().parent
 STATIC_DIR = ROOT / 'static'
@@ -15,36 +15,11 @@ class TravelHandler(BaseHTTPRequestHandler):
         path = parsed.path
 
         if path == '/api/trip-plan':
-            params = parse_qs(parsed.query)
-            interests = params.get('interests', ['culture,food'])
-            interest_list = [item.strip() for item in interests[0].split(',') if item.strip()]
-            payload = build_trip_plan(
-                destination=params.get('destination', ['Rome'])[0],
-                days=int(params.get('days', ['3'])[0]),
-                budget=float(params.get('budget', ['1800'])[0]),
-                travellers=int(params.get('travellers', ['2'])[0]),
-                interests=interest_list,
-                pace=params.get('pace', ['balanced'])[0],
-                weather=params.get('weather', ['sunny'])[0],
-                scenario=params.get('scenario', ['comfort'])[0],
-            )
-            self._send_json(payload)
+            self._send_json(trip_plan_from_query(parsed.query))
             return
 
         if path == '/api/scenarios':
-            params = parse_qs(parsed.query)
-            interests = params.get('interests', ['culture,food'])
-            interest_list = [item.strip() for item in interests[0].split(',') if item.strip()]
-            payload = compare_scenarios(
-                destination=params.get('destination', ['Rome'])[0],
-                budget=float(params.get('budget', ['1800'])[0]),
-                days=int(params.get('days', ['3'])[0]),
-                travellers=int(params.get('travellers', ['2'])[0]),
-                interests=interest_list,
-                pace=params.get('pace', ['balanced'])[0],
-                weather=params.get('weather', ['sunny'])[0],
-            )
-            self._send_json(payload)
+            self._send_json(scenarios_from_query(parsed.query))
             return
 
         file_path = self._resolve_static_path(path)

@@ -119,13 +119,16 @@ async function generatePlan() {
     interests: params.interests.join(','),
   });
 
-  const [planResponse, scenariosResponse] = await Promise.all([
-    fetch(`/api/trip-plan?${query.toString()}`),
-    fetch(`/api/scenarios?${query.toString()}`),
-  ]);
-
-  const plan = await planResponse.json();
-  const scenarios = await scenariosResponse.json();
+  let plan;
+  let scenarios;
+  try {
+    ({ plan, scenarios } = await fetchTripData(query.toString(), (message) => {
+      summaryEl.textContent = message;
+    }));
+  } catch (error) {
+    summaryEl.textContent = `Не удалось построить маршрут: ${error.message}`;
+    return;
+  }
 
   summaryEl.innerHTML = `<strong>${plan.summary}</strong>`;
   weatherNoteEl.textContent = plan.weather_note;
